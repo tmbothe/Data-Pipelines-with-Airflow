@@ -112,18 +112,17 @@ For this project, we will building a star model with fact and dimension tables. 
     |      | load_fact.py
     |      | stage_redshift.py
  ``` 
-      
- 1 - `sql_statements.py` : Under the dag folder, the sql_statements has scripts to create staging and datawarehouse tables.
- 2 - `udac_airflow_dag`  : the udac_airflow_dag file contains all airflow task and DAG definition.
- 
- The  plugins folder has two subfolder: the helpers folders that contains the helpers files, and the operators folder that has all customs operators define for the project. 
- 3 - `sql_queries.py`    : This file has all select statements to populate all facts and dimension tables.
- 4 - `data_quality.py`   : This file defines all customs logic that will help checking the data quality once the ETL is complete.
- 5 - `load_dimension.py` : File to load dimension tables.
- 6 - `load_fact.py`      : File to load fact table.
- 7 -  `stage_redshift.py`:  File to load staging tables.
- 
 
+   1 - `sql_statements.py` : Under the dag folder, the sql_statements has scripts to create staging and datawarehouse tables.<br>
+   2 - `udac_airflow_dag`  : the udac_airflow_dag file contains all airflow task and DAG definition.<br>
+ 
+   ** The  plugins folder has two subfolder: the helpers folders that contains the helpers files, and the operators folder that has all customs operators define for the project. <br>**
+   3 - `sql_queries.py`    : This file has all select statements to populate all facts and dimension tables.<br>
+   4 - `data_quality.py`   : This file defines all customs logic that will help checking the data quality once the ETL is complete.<br>
+   5 - `load_dimension.py` : File to load dimension tables.<br>
+   6 - `load_fact.py`      : File to load fact table.<br>
+   7 -  `stage_redshift.py`:  File to load staging tables.<br>
+ 
 ## Installation 
 
 - Install [python 3.8](https://www.python.org)
