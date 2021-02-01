@@ -132,14 +132,14 @@ For this project, we will building a star model with fact and dimension tables. 
 - Create IAM user in AWS and get the user access key and secret key.
 - Launch and AWS redshift cluster and get the endpoint url as well as database connection information (Database name, port number , username and password).
 - Follow the instruction below to configure Redshift as well as AWS credentials connections.
- ![image](https://raw.githubusercontent.com/tmbothe/Data-Pipelines-with-Airflow/main/images/connections1.PNG)
- ![image](https://raw.githubusercontent.com/tmbothe/Data-Pipelines-with-Airflow/main/images/connections2.PNG)
- ![image](https://raw.githubusercontent.com/tmbothe/Data-Pipelines-with-Airflow/main/images/connections3.PNG)
+ ![image](https://raw.githubusercontent.com/tmbothe/Data-Pipelines-with-Airflow/main/dags/images/connections1.PNG)
+ ![image](https://raw.githubusercontent.com/tmbothe/Data-Pipelines-with-Airflow/main/dags/images/connections2.PNG)
+ ![image](https://raw.githubusercontent.com/tmbothe/Data-Pipelines-with-Airflow/main/dags/images/connections3.PNG)
 
 
  ## Final DAG
 
-![image](https://raw.githubusercontent.com/tmbothe/Data-Pipelines-with-Airflow/main/images/final_DAG.PNG)
+![image](https://raw.githubusercontent.com/tmbothe/Data-Pipelines-with-Airflow/main/dags/images/final_DAG.PNG)
 
 
  
