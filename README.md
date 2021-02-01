@@ -1,14 +1,14 @@
 # Data-Pipelines-with-Airflow
-In this project, we will extract, transform and load data from S3 to Redshift using airflow as orchestration tool.
+In this project, we will extract, transform and load data from S3 to Redshift using Apache  Airflow as orchestration tool.
 
 ## Project Description
 
 A compagny that has been collecting songs' data and users activity wants an efficient model to store and analyze the data. The data currently resides in AWS S3 bucket in JSON format.
-This project consists of building an ETL pipeline that extracts the data from S3, processing using apache Spark, and loads back to AWS S3 in parquet format.
+This project consists of building an ETL pipeline that extracts the data from S3, processing using apache Airflow, and loads back in a datawarehouse houses in AWS redshift.
 This will help the analytics to analyze and derive insights from data.
 
 ## Data description
-There are two sources of dataset, the **Song Dataset** and the **Log Dataset** .  Both dataset are currently stored in amazon S3. These files will be read from Spark and stored in some staging tables. Then another process will extract the data from staging tables and load in final final files in S3.
+There are two sources of dataset, the **Song Dataset** and the **Log Dataset** .  Both dataset are currently stored in amazon S3. These files will be read from Apache Airflow and stored in some staging tables. Then another process will extract the data from staging tables and load in final tables in AWS redshift datawarehouse.
 
 ### The Song Dataset
 The song data is stored at : `s3://udacity-dend/song_data`  
@@ -96,59 +96,45 @@ For this project, we will building a star model with fact and dimension tables. 
  ## Project Structure
  
  The project has two main files, here is the description:
+ +--Data-Pipelines-with-Airflow
+   +--dags
+     +--sql_statements.py
+     +--udac_airflow_dag.py
+   +--plugins
+     +--helpers
+       +--sql_queries.py
+     +--operators
+       +--data_quality.py
+       +--load_dimension.py
+       +--load_fact.py
+       +--stage_redshift.py
+       
+ 1 - `sql_statements.py` : Under the dag folder, the sql_statements has scripts to create staging and datawarehouse tables.
+ 2 - `udac_airflow_dag`  : the udac_airflow_dag file contains all airflow task and DAG definition.
  
- 1 - `etl.py` :  reads and processes files from song_data and log_data and loads them into different tables structure as described above, then write them bas in AWS S3.
+ The  plugins folder has two subfolder: the helpers folders that contains the helpers files, and the operators folder that has all customs operators define for the project. 
+ 3 - `sql_queries.py`    : This file has all select statements to populate all facts and dimension tables.
+ 4 - `data_quality.py`   : This file defines all customs logic that will help checking the data quality once the ETL is complete.
+ 5 - `load_dimension.py` : File to load dimension tables.
+ 6 - `load_fact.py`      : File to load fact table.
+ 7 -  `stage_redshift.py`:  File to load staging tables.
  
- 5 - `dl.cfg` : contains a valid user access key and secret key that has access to source bucket in S3.
 
 ## Installation 
 
 - Install [python 3.8](https://www.python.org)
-- Install [pyspark](https://medium.com/tinghaochen/how-to-install-pyspark-locally-94501eefe421)
-- Clone the current repository 
-- create IAM user in AWS and get the user access key and secret key
-- Add IAM access and secret keys to dl.cfg file.
-- Open command line and move to the repository folder
-- Run the `etl.py` file to read, extract, transform and load data to different tables
+- Install [Apache Airflow](https://airflow.apache.org/docs/apache-airflow/stable/installation.html)
+- Clone the current repository. 
+- Create IAM user in AWS and get the user access key and secret key.
+- Launch and AWS redshift cluster and get the endpoint url as well as database connection information (Database name, port number , username and password).
+- Follow the instruction below to configure Redshift as well as AWS credentials connections.
+ ![image](https://raw.githubusercontent.com/tmbothe/Data-Pipelines-with-Airflow/main/images/connections1.PNG)
+ ![image](https://raw.githubusercontent.com/tmbothe/Data-Pipelines-with-Airflow/main/images/connections2.PNG)
+ ![image](https://raw.githubusercontent.com/tmbothe/Data-Pipelines-with-Airflow/main/images/connections3.PNG)
 
-## Examples of Queries
+ ## Final DAG
 
-- **Number of Subscribers:** 
-For this query, we will just count the distinct users from users' table 
+![image](https://raw.githubusercontent.com/tmbothe/Data-Pipelines-with-Airflow/main/images/final_DAG.PNG)
 
- `spark.sql("""SELECT COUNT(DISTINCT userId) as UserCount
-               FROM users
-          """).show()
-`
-
- **Result:**
-
-  ![image](https://raw.githubusercontent.com/tmbothe/data-lake-project/main/images/userCount.PNG)
-
-- **Subscribers by level:**
-
-`spark.sql("""SELECT level,COUNT(userId) subscribers
-             FROM users
-             GROUP BY level
-""").show()
-`
-
-**Result**:
-
- ![image](https://raw.githubusercontent.com/tmbothe/data-lake-project/main/images/subscriber_level.PNG)
-
-
-- **Subscribers by gender and level :**
-
-`
-spark.sql("""SELECT gender,level,COUNT(userId) subscribers
-             FROM users
-             GROUP BY gender,level
-""").show()
-`
-
-**Result**:
-
- ![image](https://raw.githubusercontent.com/tmbothe/data-lake-project/main/images/subscriber_gender.PNG)
 
  
