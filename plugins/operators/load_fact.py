@@ -9,6 +9,7 @@ class LoadFactOperator(BaseOperator):
     ui_color = '#F98866'
     
     facts_sql_template =""" 
+                        {}
                         INSERT INTO {} ( {} )
                         {} ;
                         """
@@ -16,6 +17,7 @@ class LoadFactOperator(BaseOperator):
     @apply_defaults
     def __init__(self,
                   redshift_conn_id  = "",
+                  create_sql_stmt ="",
                   table = "",
                   columns ="", 
                   fact_command = "",
@@ -23,6 +25,7 @@ class LoadFactOperator(BaseOperator):
 
         super(LoadFactOperator, self).__init__(*args, **kwargs)
         self.redshift_conn_id = redshift_conn_id
+        self.create_sql_stmt = create_sql_stmt
         self.table = table
         self.columns = columns
         self.fact_command = fact_command
@@ -34,6 +37,7 @@ class LoadFactOperator(BaseOperator):
         self.log.info(f'Loading data in {self.table}.')
         
         fact_sql = LoadFactOperator.facts_sql_template.format( 
+            self.create_sql_stmt,
             self.table,
             self.columns,
             self.fact_command
