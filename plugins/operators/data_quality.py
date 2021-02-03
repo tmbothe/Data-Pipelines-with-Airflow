@@ -39,7 +39,7 @@ class DataQualityOperator(BaseOperator):
             column2     = self.table[current_table].split(',')[1]
             
             dq_checks = [ {'check_sql' : f"SELECT COUNT(*) FROM {table_name} WHERE {column1} IS NULL",'expected_result':0, 'comparison':'='}, # check all primary keys are not null
-                          {'check_sql' : f"SELECT {column1}, COUNT(DISTINT({column1})) as distinct_rows  FROM {table_name} GROUP BY {column1}  HAVING COUNT(*) > 1 ",'expected_result':0, 'comparison':'='}, #expect_column_values_to_be_unique
+                          {'check_sql' : f"SELECT {column1}, COUNT(*) as distinct_rows  FROM {table_name} GROUP BY {column1}  HAVING COUNT(*) > 1 ",'expected_result':0, 'comparison':'='}, #expect_column_values_to_be_unique
                           {'check_sql' : f"SELECT COUNT(*) FROM {table_name} WHERE {column2} IS NULL",'expected_result':0, 'comparison':'='}, #expect_column_values_to_match_strftime_format
                           {'check_sql' : f"SELECT COUNT(*) FROM {table_name} WHERE {column2} IS NULL",'expected_result':0, 'comparison':'>'} #expect_table_row_count_greater than zero
                         ]
@@ -57,12 +57,15 @@ class DataQualityOperator(BaseOperator):
             
             logging.info(f"Checking if table {table_name} has duplicated values in primary key column {column1} ") 
             
-            duplicate_records = redshift.get_records(dq_checks[1]['check_sql'])
             
-            if len(duplicate_records[0]) < 1 or len(duplicate_records) < 1 :
-                raise ValueError(f"Data quality check failed. {table_name} has {duplicate_records[1][0]}  duplicated values")
+            duplicate_records =  redshift.get_records(dq_checks[1]['check_sql'])
+            
+                         
+            if len(duplicate_records) > 1 :
+                logging.info(f"Data quality check failed. {table_name} has { len(duplicate_records) }  duplicated values")
+                #raise ValueError(f"Data quality check failed. {table_name} has { len(duplicate_records) }  duplicated values")
             else:
-                logging.info(f' {table_name}  table has  {duplicate_records[1][0]} duplicated rows ")')
+                logging.info(f' table {table_name}  checked . No duplicated row for column {column1} ")')
                 
            
                 
