@@ -43,16 +43,15 @@ class LoadDimensionOperator(BaseOperator):
         redshift.run(create_dim_table)
                             
         records =redshift.get_records(f"SELECT COUNT(*) FROM {self.table}")
-        logging.info(f"clearing the table {records}")
-        
-        if (len(records) > 0 or len(records[0] >0 ) and self.operation_type == 'TRUNCATE'):
+                
+        if (records[0][0] > 0  and self.operation_type == 'TRUNCATE'):
             logging.info(f"clearing the table {self.table}")
-        elif (len(records) > 1 or len(records[0] < 1 ) and self.operation_type == 'TRUNCATE'):
+            redshift.run(f"TRUNCATE TABLE {self.table}")
+        elif (records[0][0]==0  and self.operation_type == 'TRUNCATE'):
             logging.info(f"Table {self.table} empty not need to truncate ...")  
         elif self.operation_type == 'INSERT':
             logging.info(f"Inserting rows into {self.table} table ...")
         else:
-            logging.info('The operation type should be INSERT OR TRUNCATE !')
             raise ValueError('The operation type should be INSERT OR TRUNCATE !')
        
         logging.info(f"Loading data into {self.table} table .....")

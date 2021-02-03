@@ -26,6 +26,7 @@ class StageToRedshiftOperator(BaseOperator):
                  table     = "",
                  create_sql_stmt="",
                  data_path = "",
+                 extract_format = "",
                  region    = "",
                  format    = "",
                  *args, **kwargs):
@@ -36,9 +37,10 @@ class StageToRedshiftOperator(BaseOperator):
         self.create_sql_stmt  = create_sql_stmt
         self.aws_credentials_id = aws_credentials_id
         self.data_path        = data_path
+        self.extract_format   = extract_format
         self.region           = region
         self.format           = format
-
+        self.file_format      ="" 
     def execute(self, context):
         aws_hook    = AwsHook(self.aws_credentials_id)
         credentials = aws_hook.get_credentials()
@@ -46,13 +48,20 @@ class StageToRedshiftOperator(BaseOperator):
         
         
         logging.info(f"Copying table {self.table} to Redshift ....")
-              
+        
+        if  not (self.format=="json" or self.format=='csv'):
+            raise ValueError(" The file format should be JSON or CSV !.")
+        elif self.format =='json':
+            self.file_format = "format json '{}' ".format(self.extract_format)
+        else:
+            self.file_format = "format CSV"
+            
         formatted_sql = StageToRedshiftOperator.copy_sql.format(
             self.create_sql_stmt,
             self.table,
             self.data_path,
             self.region,
-            self.format,
+            self.file_format,
             credentials.access_key,
             credentials.secret_key
         )

@@ -12,7 +12,7 @@ import sql_statements
 
 default_args = {
     'owner': 'udacity',
-    'Depends_on_past': False,
+    'depends_on_past': False,
     'Retries': 3,
     'Retry_delay': timedelta(minutes=5),
     'Catchup'  : False,
@@ -37,7 +37,8 @@ stage_events_to_redshift = StageToRedshiftOperator(
     table="public.staging_events",
     data_path ="s3://udacity-dend/log_data",
     region = "us-west-2",
-    format = "json 's3://udacity-dend/log_json_path.json'",
+    format = "json",
+    extract_format = "s3://udacity-dend/log_json_path.json",
     dag=dag
 )
 
@@ -49,13 +50,13 @@ stage_songs_to_redshift = StageToRedshiftOperator(
     table = "public.staging_songs",
     data_path ="s3://udacity-dend/song_data",
     region = "us-west-2",
-    format = "json 'auto'",
+    format = "json",
+    extract_format = 'auto',
     dag=dag
 )
 
 load_songplays_table = LoadFactOperator(
     task_id = 'Load_songplays_fact_table',
-    #redshift_conn_id = "redshift",
     operation_type = 'TRUNCATE',
     create_sql_stmt = sql_statements.CREATE_SONGPLAYS_TABLE_SQL,
     table = "public.songplays",
@@ -68,7 +69,6 @@ load_songplays_table = LoadFactOperator(
 
 load_user_dimension_table = LoadDimensionOperator(
      task_id = 'Load_user_dim_table',
-     #redshift_conn_id = "redshift",
      operation_type = 'TRUNCATE',
      create_sql_stmt = sql_statements.CREATE_USERS_TABLE_SQL,
      table = 'public.users',
@@ -79,7 +79,6 @@ load_user_dimension_table = LoadDimensionOperator(
 
 load_song_dimension_table = LoadDimensionOperator(
     task_id = 'Load_song_dim_table',
-    #redshift_conn_id = "redshift",
     operation_type = 'TRUNCATE',
     create_sql_stmt = sql_statements.CREATE_SONGS_TABLE_SQL,
     table = 'public.songs',
@@ -90,7 +89,6 @@ load_song_dimension_table = LoadDimensionOperator(
 
 load_artist_dimension_table = LoadDimensionOperator(
     task_id = 'Load_artist_dim_table',
-    #redshift_conn_id = "redshift",
     operation_type = 'TRUNCATE',
     create_sql_stmt = sql_statements.CREATE_ARTISTS_TABLE_SQL,
     table = 'public.artists',
@@ -101,7 +99,6 @@ load_artist_dimension_table = LoadDimensionOperator(
 
 load_time_dimension_table = LoadDimensionOperator(
     task_id='Load_time_dim_table',
-    #redshift_conn_id="redshift",
     operation_type = 'TRUNCATE',
     create_sql_stmt = sql_statements.CREATE_TIME_TABLE_SQL,
     table   = 'public.time',
@@ -112,14 +109,7 @@ load_time_dimension_table = LoadDimensionOperator(
 
 run_quality_checks = DataQualityOperator(
     task_id='Run_data_quality_checks',
-    #redshift_conn_id="redshift",
-    table = {
-             "public.artists"  : "artistid,name",
-             "public.songplays": "playid, location" ,
-             "public.songs"    : "songid, duration" ,
-             "public.time"     : "start_time,weekday" ,
-             "public.users"    : "userid,level" 
-            },
+    tables = ["artists", "songplays","songs","time","users"],
     dag=dag
 )
 
